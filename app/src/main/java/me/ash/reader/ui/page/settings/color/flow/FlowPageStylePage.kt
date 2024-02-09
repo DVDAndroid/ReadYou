@@ -40,6 +40,7 @@ fun FlowPageStylePage(
     val articleListStickyDate = LocalFlowArticleListDateStickyHeader.current
     val articleListTonalElevation = LocalFlowArticleListTonalElevation.current
     val articleListReadIndicator = LocalFlowArticleListReadIndicator.current
+    val articleSwipeDirection = LocalFlowArticleSwipeDirection.current
 
     val scope = rememberCoroutineScope()
 
@@ -49,6 +50,7 @@ fun FlowPageStylePage(
     var topBarTonalElevationDialogVisible by remember { mutableStateOf(false) }
     var articleListTonalElevationDialogVisible by remember { mutableStateOf(false) }
     var articleListReadIndicatorDialogVisible by remember { mutableStateOf(false) }
+    var articleSwipeDirectionDialogVisible by remember { mutableStateOf(false) }
 
     var filterBarPaddingValue: Int? by remember { mutableStateOf(filterBarPadding) }
 
@@ -190,6 +192,13 @@ fun FlowPageStylePage(
                         desc = articleListReadIndicator.description,
                         onClick = {
                             articleListReadIndicatorDialogVisible = true
+                        }
+                    )
+                    SettingItem(
+                        title = stringResource(R.string.article_swipe_direction),
+                        desc = articleSwipeDirection.description,
+                        onClick = {
+                            articleSwipeDirectionDialogVisible = true
                         }
                     )
                     SettingItem(
@@ -340,5 +349,20 @@ fun FlowPageStylePage(
         }
     ) {
         articleListReadIndicatorDialogVisible = false
+    }
+
+    RadioDialog(
+        visible = articleSwipeDirectionDialogVisible,
+        title = stringResource(id = R.string.article_swipe_direction),
+        options = FlowArticleSwipeDirectionPreference.values.map {
+            RadioDialogOption(
+                text = it.description,
+                selected = it == articleSwipeDirection
+            ) {
+                it.put(context, scope)
+            }
+        }
+    ) {
+        articleSwipeDirectionDialogVisible = false
     }
 }

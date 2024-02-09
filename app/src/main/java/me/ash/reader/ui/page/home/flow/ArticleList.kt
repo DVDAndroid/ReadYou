@@ -10,6 +10,8 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import me.ash.reader.domain.model.article.ArticleFlowItem
 import me.ash.reader.domain.model.article.ArticleWithFeed
+import me.ash.reader.infrastructure.preference.LocalFlowArticleSwipeDirection
+import me.ash.reader.infrastructure.preference.isEnabled
 
 @Suppress("FunctionName")
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
@@ -26,7 +28,8 @@ fun LazyListScope.ArticleList(
         when (val item = pagingItems.peek(index)) {
             is ArticleFlowItem.Article -> {
                 item(key = item.articleWithFeed.article.id) {
-                    if (item.articleWithFeed.article.isUnread) {
+                    val articleSwipeDirection = LocalFlowArticleSwipeDirection.current
+                    if (articleSwipeDirection.isEnabled() && item.articleWithFeed.article.isUnread) {
                         SwipeableArticleItem(
                             articleWithFeed = item.articleWithFeed,
                             isFilterUnread = isFilterUnread,

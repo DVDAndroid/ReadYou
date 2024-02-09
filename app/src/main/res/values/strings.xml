@@ -414,4 +414,9 @@
     <string name="submit_bug_report">submit a bug report on GitHub</string>
     <string name="unexpected_error_msg">The app encountered an unexpected error and had to close.\n\nTo help us identify and fix this issue quickly, you can %1$s with the error stack trace below.</string>
     <string name="next_article">Next article</string>
+    <string name="article_swipe_direction">Article swipe behavior</string>
+    <string name="article_swipe_direction_none">None</string>
+    <string name="article_swipe_direction_start_to_end">Start to end</string>
+    <string name="article_swipe_direction_end_to_start">End to start</string>
+    <string name="article_swipe_direction_both">Both directions</string>
 </resources>

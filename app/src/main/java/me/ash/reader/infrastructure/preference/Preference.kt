@@ -51,6 +51,7 @@ fun Preferences.toSettings(): Settings {
         ),
         flowArticleListReadIndicator = FlowArticleReadIndicatorPreference.fromPreferences(this),
         flowArticleListTonalElevation = FlowArticleListTonalElevationPreference.fromPreferences(this),
+        flowArticleSwipeDirection = FlowArticleSwipeDirectionPreference.fromPreferences(this),
 
         // Reading page
         readingTheme = ReadingThemePreference.fromPreferences(this),

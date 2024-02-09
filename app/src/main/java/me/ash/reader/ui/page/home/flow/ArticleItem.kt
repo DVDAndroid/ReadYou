@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -179,10 +180,14 @@ fun SwipeableArticleItem(
     onClick: (ArticleWithFeed) -> Unit = {},
     onSwipeOut: (ArticleWithFeed) -> Unit = {},
 ) {
+    val articleSwipeDirectionPreference = LocalFlowArticleSwipeDirection.current
     var isArticleVisible by remember { mutableStateOf(true) }
     val dismissState =
         rememberDismissState(initialValue = DismissValue.Default, confirmStateChange = {
-            if (it == DismissValue.DismissedToEnd) {
+            val startToEndSwipe = articleSwipeDirectionPreference.isStartToEnd() && it == DismissValue.DismissedToEnd
+            val endToStartSwipe = articleSwipeDirectionPreference.isEndToStart() && it == DismissValue.DismissedToStart
+
+            if (startToEndSwipe || endToStartSwipe) {
                 isArticleVisible = !isFilterUnread
                 onSwipeOut(articleWithFeed)
             }
@@ -193,28 +198,13 @@ fun SwipeableArticleItem(
             state = dismissState,
             /***  create dismiss alert background box */
             background = {
-                if (dismissState.dismissDirection == DismissDirection.StartToEnd) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            // .background(MaterialTheme.colorScheme.surface)
-                            .padding(24.dp)
-                    ) {
-                        Column(modifier = Modifier.align(Alignment.CenterStart)) {
-                            Icon(
-                                imageVector = Icons.Rounded.CheckCircleOutline,
-                                contentDescription = stringResource(R.string.mark_as_read),
-                                tint = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.align(Alignment.CenterHorizontally)
-                            )
-                            Text(
-                                text = stringResource(R.string.mark_as_read),
-                                textAlign = TextAlign.Center,
-                                color = MaterialTheme.colorScheme.tertiary,
-                                style = MaterialTheme.typography.labelLarge,
-                            )
-                        }
-
+                Row {
+                    if (articleSwipeDirectionPreference.isStartToEnd()) {
+                        MarkAsReadSwipeAction()
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    if (articleSwipeDirectionPreference.isEndToStart()) {
+                        MarkAsReadSwipeAction()
                     }
                 }
             },
@@ -233,7 +223,53 @@ fun SwipeableArticleItem(
                 }
             },
             /*** Set Direction to dismiss */
-            directions = setOf(DismissDirection.StartToEnd),
+            directions = when (articleSwipeDirectionPreference) {
+                FlowArticleSwipeDirectionPreference.None -> emptySet()
+                FlowArticleSwipeDirectionPreference.StartToEnd -> setOf(DismissDirection.StartToEnd)
+                FlowArticleSwipeDirectionPreference.EndToStart -> setOf(DismissDirection.EndToStart)
+                FlowArticleSwipeDirectionPreference.Both -> setOf(
+                    DismissDirection.StartToEnd,
+                    DismissDirection.EndToStart,
+                )
+            },
         )
     }
+}
+
+@Composable
+private fun SwipeAction(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    text: String,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxHeight()
+            // .background(MaterialTheme.colorScheme.surface)
+            .padding(24.dp)
+    ) {
+        Column(modifier = Modifier.align(Alignment.CenterStart)) {
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                tint = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            Text(
+                text = text,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.tertiary,
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun MarkAsReadSwipeAction() {
+    SwipeAction(
+        icon = Icons.Rounded.CheckCircleOutline,
+        text = stringResource(R.string.mark_as_read)
+    )
 }
